@@ -47,16 +47,16 @@ update msg model =
 
 playToggleButton : Stopwatch.Model -> Html Msg
 playToggleButton timer =
-    if Stopwatch.isPaused timer then
+    let
+        ( msg, iconClass ) =
+            if Stopwatch.isPaused timer then
+                ( Play, "fa-play" )
+            else
+                ( Pause, "fa-pause" )
+    in
         Html.button
-            [ Html.Events.onClick Play
-            , class "fa-play fa-3x control"
-            ]
-            []
-    else
-        Html.button
-            [ Html.Events.onClick Pause
-            , class "fa-pause fa-3x control"
+            [ Html.Events.onClick msg
+            , class <| iconClass ++ " fa-3x control"
             ]
             []
 
