@@ -1,0 +1,16 @@
+.master {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.timer {
+    font-size: 168px;
+}
+
+.control {
+    padding: 5px 35px;
+}
