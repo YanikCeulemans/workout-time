@@ -1,4 +1,6 @@
-module Util exposing (padNumber)
+module Util exposing (padNumber, timeToString)
+
+import Time
 
 
 padZeroesLeft : String -> String
@@ -16,3 +18,21 @@ padNumber num =
             numStr |> padZeroesLeft
         else
             numStr
+
+
+timeToString : Time.Time -> String
+timeToString time =
+    let
+        minutes =
+            Time.inMinutes time
+                |> floor
+                |> ((flip (%)) 60)
+                |> padNumber
+
+        seconds =
+            Time.inSeconds time
+                |> floor
+                |> ((flip (%)) 60)
+                |> padNumber
+    in
+        minutes ++ ":" ++ seconds

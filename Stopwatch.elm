@@ -59,27 +59,9 @@ tick (Model model) =
             Model model
 
 
-timeToString : Time.Time -> String
-timeToString time =
-    let
-        minutes =
-            inMinutes time
-                |> floor
-                |> ((flip (%)) 60)
-                |> Util.padNumber
-
-        seconds =
-            inSeconds time
-                |> floor
-                |> ((flip (%)) 60)
-                |> Util.padNumber
-    in
-        minutes ++ ":" ++ seconds
-
-
 toString : Model -> String
 toString (Model { time }) =
-    timeToString time
+    Util.timeToString time
 
 
 isPaused : Model -> Bool

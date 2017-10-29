@@ -1,0 +1,27 @@
+{
+    "name": "workout-time",
+    "version": "1.0.0",
+    "description": "",
+    "main": "main.js",
+    "watch": {
+        "build": "*.elm"
+    },
+    "scripts": {
+        "start": "npm run watch",
+        "watch": "npm-watch",
+        "build": "elm-make Main.elm --output=main.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/YanikCeulemans/workout-time.git"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/YanikCeulemans/workout-time/issues"
+    },
+    "homepage": "https://github.com/YanikCeulemans/workout-time#readme",
+    "devDependencies": {
+        "npm-watch": "^0.3.0"
+    }
+}

@@ -5,6 +5,7 @@ import Html.Attributes exposing (class)
 import Html.Events
 import Time exposing (..)
 import Stopwatch
+import CycleTimer
 
 
 type Msg
@@ -18,6 +19,7 @@ type alias Model =
     { workingTime : Time.Time
     , restingTime : Time.Time
     , stopwatch : Stopwatch.Model
+    , cycleTimer : CycleTimer.Model
     }
 
 
@@ -26,6 +28,10 @@ initialModel =
     { workingTime = 45 * second
     , restingTime = 15 * second
     , stopwatch = Stopwatch.initial
+    , cycleTimer =
+        CycleTimer.initialize
+            (CycleTimer.cycle "Burpees" (45 * second))
+            []
     }
 
 
@@ -66,6 +72,10 @@ view model =
     Html.div [ class "master" ]
         [ Html.div [ class "timer" ]
             [ Stopwatch.toString model.stopwatch
+                |> Html.text
+            ]
+        , Html.div [ class "timer" ]
+            [ CycleTimer.toString model.cycleTimer
                 |> Html.text
             ]
         , Html.div [ class "controls" ]
