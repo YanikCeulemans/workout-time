@@ -16,22 +16,20 @@ type Msg
 
 
 type alias Model =
-    { workingTime : Time.Time
-    , restingTime : Time.Time
-    , stopwatch : Stopwatch.Model
+    { stopwatch : Stopwatch.Model
     , cycleTimer : CycleTimer.Model
     }
 
 
 initialModel : Model
 initialModel =
-    { workingTime = 45 * second
-    , restingTime = 15 * second
-    , stopwatch = Stopwatch.initial
+    { stopwatch = Stopwatch.initial
     , cycleTimer =
         CycleTimer.initialize
             (CycleTimer.cycle "Burpees" (45 * second))
-            []
+            [ CycleTimer.cycle "Rest" (15 * second)
+            , CycleTimer.cycle "Push ups" (45 * second)
+            ]
     }
 
 
@@ -39,13 +37,25 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Play ->
-            { model | stopwatch = Stopwatch.start model.stopwatch } ! []
+            { model
+                | stopwatch = Stopwatch.start model.stopwatch
+                , cycleTimer = CycleTimer.start model.cycleTimer
+            }
+                ! []
 
         Pause ->
-            { model | stopwatch = Stopwatch.pause model.stopwatch } ! []
+            { model
+                | stopwatch = Stopwatch.pause model.stopwatch
+                , cycleTimer = CycleTimer.pause model.cycleTimer
+            }
+                ! []
 
         Tick ->
-            { model | stopwatch = Stopwatch.tick model.stopwatch } ! []
+            { model
+                | stopwatch = Stopwatch.tick model.stopwatch
+                , cycleTimer = CycleTimer.tick model.cycleTimer
+            }
+                ! []
 
         Reset ->
             { model | stopwatch = Stopwatch.reset model.stopwatch } ! []

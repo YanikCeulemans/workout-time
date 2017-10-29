@@ -69,24 +69,29 @@ tick (Model model) =
             Model model
 
         Counting ->
-            if model.timer >= 0 then
+            if model.timer > 0 then
                 Model { model | timer = model.timer - (1 * Time.second) }
             else if isLast model.cycles then
-                Model { model | state = Paused }
+                pause (Model model)
             else
-                let
-                    nextedCycles =
-                        selectNext model.cycles
+                selectNextCycle (Model model)
 
-                    nextDuration =
-                        SelectList.selected nextedCycles
-                            |> (\(Cycle next) -> next.duration)
-                in
-                    Model
-                        { model
-                            | cycles = nextedCycles
-                            , timer = nextDuration
-                        }
+
+selectNextCycle : Model -> Model
+selectNextCycle (Model model) =
+    let
+        nextedCycles =
+            selectNext model.cycles
+
+        nextDuration =
+            SelectList.selected nextedCycles
+                |> (\(Cycle next) -> next.duration)
+    in
+        Model
+            { model
+                | cycles = nextedCycles
+                , timer = nextDuration
+            }
 
 
 selectNext : SelectList.SelectList a -> SelectList.SelectList a
