@@ -29,7 +29,7 @@ initialModel =
     { stopwatch = Stopwatch.initial
     , workouts =
         List.Selection.fromList
-            [ CycleTimer.initialize
+            [ CycleTimer.initialize "Fat burning"
                 (CycleTimer.cycle "Burpees" (45 * second))
                 [ CycleTimer.cycle "Rest" (15 * second)
                 , CycleTimer.cycle "Push ups" (45 * second)

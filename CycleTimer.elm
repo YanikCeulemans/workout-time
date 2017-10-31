@@ -50,16 +50,18 @@ type ModelState
 
 type Model
     = Model
-        { state : ModelState
+        { title : String
+        , state : ModelState
         , timer : Time.Time
         , cycles : SelectList.SelectList Cycle
         }
 
 
-initialize : Cycle -> List Cycle -> Model
-initialize (Cycle cycle) cycles =
+initialize : String -> Cycle -> List Cycle -> Model
+initialize title (Cycle cycle) cycles =
     Model
-        { state = Paused
+        { title = title
+        , state = Paused
         , timer = cycle.duration
         , cycles = SelectList.fromLists [] (Cycle cycle) cycles
         }
@@ -149,7 +151,8 @@ modelStateToJson =
 modelToJson : Model -> JsonE.Value
 modelToJson (Model model) =
     JsonE.object
-        [ ( "state", modelStateToJson model.state )
+        [ ( "title", JsonE.string model.title )
+        , ( "state", modelStateToJson model.state )
         , ( "timer", JsonE.float <| Time.inMilliseconds model.timer )
         , ( "cycles"
           , SelectList.map cycleToJson model.cycles
@@ -190,14 +193,16 @@ modelCyclesDecoder =
 
 modelJsonDecoder : JsonD.Decoder Model
 modelJsonDecoder =
-    JsonD.map3
-        (\state timer cycles ->
+    JsonD.map4
+        (\title state timer cycles ->
             Model
-                { state = state
+                { title = title
+                , state = state
                 , timer = timer
                 , cycles = cycles
                 }
         )
+        (JsonD.field "title" JsonD.string)
         (JsonD.field "state" (JsonD.map modelStateFromString JsonD.string))
         (JsonD.field "timer" (JsonD.map ((*) Time.millisecond) JsonD.float))
         (JsonD.field "cycles" modelCyclesDecoder)
