@@ -4,6 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html.Events
 import Time exposing (..)
+import List.Selection exposing (Selection)
 import Stopwatch
 import CycleTimer
 import Json.Encode as JsonE
@@ -19,20 +20,39 @@ type Msg
 
 type alias Model =
     { stopwatch : Stopwatch.Model
-    , cycleTimer : CycleTimer.Model
+    , workouts : Selection CycleTimer.Model
     }
 
 
 initialModel : Model
 initialModel =
     { stopwatch = Stopwatch.initial
-    , cycleTimer =
-        CycleTimer.initialize
-            (CycleTimer.cycle "Burpees" (45 * second))
-            [ CycleTimer.cycle "Rest" (15 * second)
-            , CycleTimer.cycle "Push ups" (45 * second)
+    , workouts =
+        List.Selection.fromList
+            [ CycleTimer.initialize
+                (CycleTimer.cycle "Burpees" (45 * second))
+                [ CycleTimer.cycle "Rest" (15 * second)
+                , CycleTimer.cycle "Push ups" (45 * second)
+                ]
             ]
     }
+
+
+mapSelected : (a -> a) -> Selection a -> Selection a
+mapSelected mapFn selection =
+    List.Selection.selected selection
+        |> Maybe.map
+            (\selected ->
+                List.Selection.map
+                    (\el ->
+                        if el /= selected then
+                            el
+                        else
+                            mapFn el
+                    )
+                    selection
+            )
+        |> Maybe.withDefault selection
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -41,21 +61,21 @@ update msg model =
         Play ->
             { model
                 | stopwatch = Stopwatch.start model.stopwatch
-                , cycleTimer = CycleTimer.start model.cycleTimer
+                , workouts = mapSelected CycleTimer.start model.workouts
             }
                 ! []
 
         Pause ->
             { model
                 | stopwatch = Stopwatch.pause model.stopwatch
-                , cycleTimer = CycleTimer.pause model.cycleTimer
+                , workouts = mapSelected CycleTimer.pause model.workouts
             }
                 ! []
 
         Tick ->
             { model
                 | stopwatch = Stopwatch.tick model.stopwatch
-                , cycleTimer = CycleTimer.tick model.cycleTimer
+                , workouts = mapSelected CycleTimer.tick model.workouts
             }
                 ! []
 
@@ -86,10 +106,6 @@ view model =
             [ Stopwatch.toString model.stopwatch
                 |> Html.text
             ]
-        , Html.div [ class "timer" ]
-            [ CycleTimer.toString model.cycleTimer
-                |> Html.text
-            ]
         , Html.div [ class "controls" ]
             [ playToggleButton model.stopwatch
             , Html.button
@@ -98,8 +114,6 @@ view model =
                 ]
                 []
             ]
-        , Html.pre [] [ CycleTimer.modelToJson model.cycleTimer |> JsonE.encode 2 |> Html.text ]
-        , Html.pre [] [ CycleTimer.modelToJson model.cycleTimer |> JsonE.encode 0 |> JsonD.decodeString CycleTimer.modelJsonDecoder |> toString |> Html.text ]
         ]
 
 
