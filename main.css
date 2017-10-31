@@ -7,6 +7,21 @@
     align-items: center;
     background-color: #191616;
     color: #d0c4c4;
+    font-size: 26px;
+}
+
+.workout {
+    display: inline-block;
+    padding: 10px 25px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    user-select: none;
+}
+
+.workout:hover {
+    background-color: #d0c4c4;
+    color: #191616;
 }
 
 .timer {

@@ -1,4 +1,4 @@
-module CycleTimer exposing (Cycle, cycle, Model, start, pause, initialize, tick, toString, modelToJson, modelJsonDecoder)
+module CycleTimer exposing (Cycle, cycle, Model, initialize, title, start, pause, tick, toString, modelToJson, modelJsonDecoder)
 
 import Time
 import Json.Encode as JsonE
@@ -65,6 +65,11 @@ initialize title (Cycle cycle) cycles =
         , timer = cycle.duration
         , cycles = SelectList.fromLists [] (Cycle cycle) cycles
         }
+
+
+title : Model -> String
+title (Model model) =
+    model.title
 
 
 start : Model -> Model

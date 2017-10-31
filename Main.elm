@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class)
-import Html.Events
+import Html.Events exposing (onClick)
 import Time exposing (..)
 import List.Selection exposing (Selection)
 import Stopwatch
@@ -16,6 +16,8 @@ type Msg
     | Reset
     | Pause
     | Tick
+    | SelectWorkout CycleTimer.Model
+    | Deselect
 
 
 type alias Model =
@@ -79,8 +81,16 @@ update msg model =
             }
                 ! []
 
+        -- TODO: This should also reset each workout
         Reset ->
             { model | stopwatch = Stopwatch.reset model.stopwatch } ! []
+
+        SelectWorkout workout ->
+            { model | workouts = List.Selection.select workout model.workouts } ! []
+
+        -- TODO: this should also call reset
+        Deselect ->
+            { model | workouts = List.Selection.deselect model.workouts } ! []
 
 
 playToggleButton : Stopwatch.Model -> Html Msg
@@ -101,6 +111,37 @@ playToggleButton timer =
 
 view : Model -> Html Msg
 view model =
+    case List.Selection.selected model.workouts of
+        Just workout ->
+            viewWorkout model
+
+        Nothing ->
+            viewWorkoutSelector model
+
+
+workoutItem : CycleTimer.Model -> Html Msg
+workoutItem workout =
+    Html.li
+        [ class "workout"
+        , onClick <| SelectWorkout workout
+        ]
+        [ CycleTimer.title workout |> Html.text ]
+
+
+viewWorkoutSelector : Model -> Html Msg
+viewWorkoutSelector model =
+    Html.div [ class "master" ]
+        [ Html.ul []
+            (List.Selection.map
+                workoutItem
+                model.workouts
+                |> List.Selection.toList
+            )
+        ]
+
+
+viewWorkout : Model -> Html Msg
+viewWorkout model =
     Html.div [ class "master" ]
         [ Html.div [ class "timer" ]
             [ Stopwatch.toString model.stopwatch
@@ -113,6 +154,11 @@ view model =
                 , class "fa-repeat fa-3x control"
                 ]
                 []
+            , Html.button
+                [ class "control"
+                , onClick Deselect
+                ]
+                [ Html.text "Back" ]
             ]
         ]
 
