@@ -5,6 +5,8 @@
     height: 100vh;
     justify-content: center;
     align-items: center;
+    background-color: #191616;
+    color: #d0c4c4;
 }
 
 .timer {

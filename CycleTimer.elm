@@ -1,6 +1,8 @@
-module CycleTimer exposing (Cycle, cycle, Model, start, pause, initialize, tick, toString)
+module CycleTimer exposing (Cycle, cycle, Model, start, pause, initialize, tick, toString, modelToJson, modelJsonDecoder)
 
 import Time
+import Json.Encode as JsonE
+import Json.Decode as JsonD
 import Util
 import SelectList
 
@@ -10,6 +12,27 @@ type Cycle
         { title : String
         , duration : Time.Time
         }
+
+
+cycleToJson : Cycle -> JsonE.Value
+cycleToJson (Cycle cycle) =
+    JsonE.object
+        [ ( "title", JsonE.string cycle.title )
+        , ( "duration", JsonE.float <| Time.inMilliseconds cycle.duration )
+        ]
+
+
+cycleJsonDecoder : JsonD.Decoder Cycle
+cycleJsonDecoder =
+    JsonD.map2
+        (\title duration ->
+            Cycle
+                { title = title
+                , duration = duration
+                }
+        )
+        (JsonD.field "title" JsonD.string)
+        (JsonD.field "duration" (JsonD.map ((*) Time.millisecond) JsonD.float))
 
 
 cycle : String -> Time.Time -> Cycle
@@ -116,3 +139,65 @@ isLast =
 toString : Model -> String
 toString (Model { timer, cycles }) =
     (SelectList.selected cycles |> (\(Cycle cycle) -> cycle.title)) ++ " " ++ Util.timeToString timer
+
+
+modelStateToJson : ModelState -> JsonE.Value
+modelStateToJson =
+    Basics.toString >> JsonE.string
+
+
+modelToJson : Model -> JsonE.Value
+modelToJson (Model model) =
+    JsonE.object
+        [ ( "state", modelStateToJson model.state )
+        , ( "timer", JsonE.float <| Time.inMilliseconds model.timer )
+        , ( "cycles"
+          , SelectList.map cycleToJson model.cycles
+                |> SelectList.toList
+                |> JsonE.list
+          )
+        ]
+
+
+modelStateFromString : String -> ModelState
+modelStateFromString str =
+    case str of
+        "Counting" ->
+            Counting
+
+        _ ->
+            Paused
+
+
+modelCyclesFromList : List Cycle -> JsonD.Decoder (SelectList.SelectList Cycle)
+modelCyclesFromList cycles =
+    case cycles of
+        [] ->
+            JsonD.fail "A minimum on 1 cycle is required"
+
+        [ cycle ] ->
+            JsonD.succeed <| SelectList.singleton cycle
+
+        head :: tail ->
+            JsonD.succeed <| SelectList.fromLists [] head tail
+
+
+modelCyclesDecoder : JsonD.Decoder (SelectList.SelectList Cycle)
+modelCyclesDecoder =
+    JsonD.list cycleJsonDecoder
+        |> JsonD.andThen modelCyclesFromList
+
+
+modelJsonDecoder : JsonD.Decoder Model
+modelJsonDecoder =
+    JsonD.map3
+        (\state timer cycles ->
+            Model
+                { state = state
+                , timer = timer
+                , cycles = cycles
+                }
+        )
+        (JsonD.field "state" (JsonD.map modelStateFromString JsonD.string))
+        (JsonD.field "timer" (JsonD.map ((*) Time.millisecond) JsonD.float))
+        (JsonD.field "cycles" modelCyclesDecoder)

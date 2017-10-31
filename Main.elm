@@ -6,6 +6,8 @@ import Html.Events
 import Time exposing (..)
 import Stopwatch
 import CycleTimer
+import Json.Encode as JsonE
+import Json.Decode as JsonD
 
 
 type Msg
@@ -96,6 +98,8 @@ view model =
                 ]
                 []
             ]
+        , Html.pre [] [ CycleTimer.modelToJson model.cycleTimer |> JsonE.encode 2 |> Html.text ]
+        , Html.pre [] [ CycleTimer.modelToJson model.cycleTimer |> JsonE.encode 0 |> JsonD.decodeString CycleTimer.modelJsonDecoder |> toString |> Html.text ]
         ]
 
 
