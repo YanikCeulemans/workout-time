@@ -81,9 +81,12 @@ update msg model =
             }
                 ! []
 
-        -- TODO: This should also reset each workout
         Reset ->
-            { model | stopwatch = Stopwatch.reset model.stopwatch } ! []
+            { model
+                | stopwatch = Stopwatch.reset model.stopwatch
+                , workouts = List.Selection.map CycleTimer.reset model.workouts
+            }
+                ! []
 
         SelectWorkout workout ->
             { model | workouts = List.Selection.select workout model.workouts } ! []

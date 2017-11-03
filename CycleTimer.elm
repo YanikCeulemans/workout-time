@@ -1,9 +1,8 @@
-module CycleTimer exposing (Cycle, cycle, Model, initialize, title, start, pause, tick, toString, modelToJson, modelJsonDecoder)
+module CycleTimer exposing (Cycle, cycle, Model, initialize, title, start, pause, reset, tick, current, modelToJson, modelJsonDecoder)
 
 import Time
 import Json.Encode as JsonE
 import Json.Decode as JsonD
-import Util
 import SelectList
 
 
@@ -41,6 +40,11 @@ cycle title duration =
         { title = title
         , duration = duration
         }
+
+
+cycleDuration : Cycle -> Time.Time
+cycleDuration (Cycle cycle) =
+    cycle.duration
 
 
 type ModelState
@@ -92,6 +96,12 @@ pause (Model model) =
             Model model
 
 
+reset : Model -> Model
+reset model =
+    pause model
+        |> selectFirstCycle
+
+
 tick : Model -> Model
 tick (Model model) =
     case model.state of
@@ -107,6 +117,31 @@ tick (Model model) =
                 selectNextCycle (Model model)
 
 
+selectFirstCycle : Model -> Model
+selectFirstCycle (Model model) =
+    let
+        cycleList =
+            SelectList.toList model.cycles
+    in
+        case cycleList of
+            [] ->
+                Model model
+
+            [ single ] ->
+                Model
+                    { model
+                        | cycles = SelectList.singleton single
+                        , timer = cycleDuration single
+                    }
+
+            head :: tail ->
+                Model
+                    { model
+                        | cycles = SelectList.fromLists [] head tail
+                        , timer = cycleDuration head
+                    }
+
+
 selectNextCycle : Model -> Model
 selectNextCycle (Model model) =
     let
@@ -115,7 +150,7 @@ selectNextCycle (Model model) =
 
         nextDuration =
             SelectList.selected nextedCycles
-                |> (\(Cycle next) -> next.duration)
+                |> cycleDuration
     in
         Model
             { model
@@ -143,9 +178,9 @@ isLast =
     SelectList.after >> List.isEmpty
 
 
-toString : Model -> String
-toString (Model { timer, cycles }) =
-    (SelectList.selected cycles |> (\(Cycle cycle) -> cycle.title)) ++ " " ++ Util.timeToString timer
+current : Model -> ( String, Time.Time )
+current (Model { timer, cycles }) =
+    ( SelectList.selected cycles |> (\(Cycle cycle) -> cycle.title), timer )
 
 
 modelStateToJson : ModelState -> JsonE.Value
