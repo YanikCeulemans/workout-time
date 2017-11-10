@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Time exposing (..)
 import List.Selection exposing (Selection)
@@ -9,6 +9,7 @@ import Stopwatch
 import CycleTimer
 import Json.Encode as JsonE
 import Json.Decode as JsonD
+import Debug
 
 
 type Msg
@@ -18,6 +19,8 @@ type Msg
     | Tick
     | SelectWorkout CycleTimer.Model
     | Deselect
+    | NavigateToAdd
+    | NavigateToHome
 
 
 type Route
@@ -108,6 +111,12 @@ update msg model =
             }
                 ! []
 
+        NavigateToAdd ->
+            { model | activeRoute = Add } ! []
+
+        NavigateToHome ->
+            { model | activeRoute = Select } ! []
+
 
 playToggleButton : Stopwatch.Model -> Html Msg
 playToggleButton timer =
@@ -127,6 +136,36 @@ playToggleButton timer =
 
 view : Model -> Html Msg
 view model =
+    Html.div [ class "master" ]
+        [ Html.header [ class "header" ] [ viewHeader model ]
+        , Html.div [ class "content" ] [ viewRouteContent model ]
+        ]
+
+
+viewHeader : Model -> Html Msg
+viewHeader model =
+    Html.div [ class "header-content" ]
+        [ Html.div [ class "header-title" ]
+            [ Html.button
+                [ onClick NavigateToHome
+                , class "fa-arrow-left control-transparent control-navigate-back"
+                , classList [ ( "active", model.activeRoute /= Select ) ]
+                ]
+                []
+            , Html.span [ class "header-title-text" ]
+                [ Html.text "Workout time" ]
+            ]
+        , Html.button
+            [ onClick NavigateToAdd
+            , class "fa-plus-circle control-transparent hidable"
+            , classList [ ( "active", model.activeRoute == Add ) ]
+            ]
+            []
+        ]
+
+
+viewRouteContent : Model -> Html Msg
+viewRouteContent model =
     case model.activeRoute of
         Select ->
             viewWorkoutSelector model
@@ -138,7 +177,7 @@ view model =
             Html.div [] []
 
         Add ->
-            Html.div [] []
+            viewAdd model
 
 
 workoutItem : CycleTimer.Model -> Html Msg
@@ -152,19 +191,17 @@ workoutItem workout =
 
 viewWorkoutSelector : Model -> Html Msg
 viewWorkoutSelector model =
-    Html.div [ class "master" ]
-        [ Html.ul []
-            (List.Selection.map
-                workoutItem
-                model.workouts
-                |> List.Selection.toList
-            )
-        ]
+    Html.ul []
+        (List.Selection.map
+            workoutItem
+            model.workouts
+            |> List.Selection.toList
+        )
 
 
 viewWorkout : Model -> Html Msg
 viewWorkout model =
-    Html.div [ class "master" ]
+    Html.div []
         [ Html.div [ class "timer" ]
             [ Stopwatch.toString model.stopwatch
                 |> Html.text
@@ -183,6 +220,11 @@ viewWorkout model =
                 [ Html.text "Back" ]
             ]
         ]
+
+
+viewAdd : Model -> Html Msg
+viewAdd model =
+    Html.div [] [ Html.text "Add" ]
 
 
 subscriptions : Model -> Sub Msg

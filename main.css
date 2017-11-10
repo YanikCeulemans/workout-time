@@ -1,13 +1,58 @@
+button:focus {
+    outline: none;
+}
+
+.hidable {
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.hidable.active {
+    opacity: 0;
+}
+
 .master {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "header" "content";
     width: 100vw;
     height: 100vh;
-    justify-content: center;
-    align-items: center;
     background-color: #191616;
     color: #d0c4c4;
     font-size: 26px;
+}
+
+.header {
+    grid-area: header;
+}
+
+.header-content {
+    display: flex;
+    height: 60px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+}
+
+.header-title > * {
+    margin-right: 20px;
+}
+
+.header-title > *:last-child {
+    margin-right: 0;
+}
+
+.content {
+    grid-area: content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .workout {
@@ -30,4 +75,24 @@
 
 .control {
     padding: 5px 35px;
+}
+
+.control-transparent {
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 1em;
+    padding: 0;
+    cursor: pointer;
+}
+
+.control-navigate-back {
+    width: 0;
+    opacity: 0;
+    transition: width 0.3s, opacity 0.3s;
+}
+
+.control-navigate-back.active {
+    width: 23px;
+    opacity: 1;
 }
