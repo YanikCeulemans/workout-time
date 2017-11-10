@@ -20,9 +20,17 @@ type Msg
     | Deselect
 
 
+type Route
+    = Select
+    | Workout CycleTimer.Model
+    | Edit CycleTimer.Model
+    | Add
+
+
 type alias Model =
     { stopwatch : Stopwatch.Model
     , workouts : Selection CycleTimer.Model
+    , activeRoute : Route
     }
 
 
@@ -37,6 +45,7 @@ initialModel =
                 , CycleTimer.cycle "Push ups" (45 * second)
                 ]
             ]
+    , activeRoute = Select
     }
 
 
@@ -91,9 +100,13 @@ update msg model =
         SelectWorkout workout ->
             { model | workouts = List.Selection.select workout model.workouts } ! []
 
-        -- TODO: this should also call reset
         Deselect ->
-            { model | workouts = List.Selection.deselect model.workouts } ! []
+            { model
+                | workouts =
+                    List.Selection.map CycleTimer.reset model.workouts
+                        |> List.Selection.deselect
+            }
+                ! []
 
 
 playToggleButton : Stopwatch.Model -> Html Msg
@@ -114,12 +127,18 @@ playToggleButton timer =
 
 view : Model -> Html Msg
 view model =
-    case List.Selection.selected model.workouts of
-        Just workout ->
+    case model.activeRoute of
+        Select ->
+            viewWorkoutSelector model
+
+        Workout workout ->
             viewWorkout model
 
-        Nothing ->
-            viewWorkoutSelector model
+        Edit workout ->
+            Html.div [] []
+
+        Add ->
+            Html.div [] []
 
 
 workoutItem : CycleTimer.Model -> Html Msg
