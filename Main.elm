@@ -101,7 +101,11 @@ update msg model =
                 ! []
 
         SelectWorkout workout ->
-            { model | workouts = List.Selection.select workout model.workouts } ! []
+            { model
+                | workouts = List.Selection.select workout model.workouts
+                , activeRoute = Workout workout
+            }
+                ! []
 
         Deselect ->
             { model
@@ -115,7 +119,13 @@ update msg model =
             { model | activeRoute = Add } ! []
 
         NavigateToHome ->
-            { model | activeRoute = Select } ! []
+            { model
+                | activeRoute = Select
+                , workouts =
+                    List.Selection.map CycleTimer.reset model.workouts
+                        |> List.Selection.deselect
+            }
+                ! []
 
 
 playToggleButton : Stopwatch.Model -> Html Msg
@@ -213,11 +223,6 @@ viewWorkout model =
                 , class "fa-repeat fa-3x control"
                 ]
                 []
-            , Html.button
-                [ class "control"
-                , onClick Deselect
-                ]
-                [ Html.text "Back" ]
             ]
         ]
 
