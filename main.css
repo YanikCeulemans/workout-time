@@ -24,6 +24,7 @@ button:focus {
 
 .header {
     grid-area: header;
+    background-color: #312c2c;
 }
 
 .header-content {
@@ -56,16 +57,20 @@ button:focus {
 }
 
 .workout {
-    display: inline-block;
     padding: 10px 25px;
     border: 1px solid #ccc;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
     user-select: none;
+    text-align: center;
 }
 
 .workout:hover {
     background-color: #d0c4c4;
+    color: #191616;
+}
+
+.workout:hover .control-transparent {
     color: #191616;
 }
 
@@ -82,8 +87,10 @@ button:focus {
     color: white;
     border: none;
     font-size: 1em;
+    line-height: 1;
     padding: 0;
     cursor: pointer;
+    transition: color 0.3s;
 }
 
 .control-navigate-back {

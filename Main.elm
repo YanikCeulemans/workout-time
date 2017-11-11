@@ -165,12 +165,6 @@ viewHeader model =
             , Html.span [ class "header-title-text" ]
                 [ Html.text "Workout time" ]
             ]
-        , Html.button
-            [ onClick NavigateToAdd
-            , class "fa-plus-circle control-transparent hidable"
-            , classList [ ( "active", model.activeRoute == Add ) ]
-            ]
-            []
         ]
 
 
@@ -201,12 +195,23 @@ workoutItem workout =
 
 viewWorkoutSelector : Model -> Html Msg
 viewWorkoutSelector model =
-    Html.ul []
-        (List.Selection.map
-            workoutItem
-            model.workouts
-            |> List.Selection.toList
-        )
+    let
+        workouts =
+            List.Selection.map
+                workoutItem
+                model.workouts
+                |> List.Selection.toList
+
+        addWorkoutButton =
+            [ Html.li
+                [ class "workout"
+                , onClick NavigateToAdd
+                ]
+                [ Html.button [ class "control-transparent fa-plus-circle" ] [] ]
+            ]
+    in
+        Html.ul []
+            (workouts ++ addWorkoutButton)
 
 
 viewWorkout : Model -> Html Msg
