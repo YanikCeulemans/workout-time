@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, classList)
+import Html.Attributes exposing (class, classList, type_)
 import Html.Events exposing (onClick)
 import Time exposing (..)
 import List.Selection exposing (Selection)
@@ -33,8 +33,14 @@ type Route
 type alias Model =
     { stopwatch : Stopwatch.Model
     , workouts : Selection CycleTimer.Model
+    , newWorkout : CycleTimer.Model
     , activeRoute : Route
     }
+
+
+newWorkout : CycleTimer.Model
+newWorkout =
+    CycleTimer.initialize "" (CycleTimer.cycle "" 0) []
 
 
 initialModel : Model
@@ -48,6 +54,7 @@ initialModel =
                 , CycleTimer.cycle "Push ups" (45 * second)
                 ]
             ]
+    , newWorkout = newWorkout
     , activeRoute = Select
     }
 
@@ -232,9 +239,28 @@ viewWorkout model =
         ]
 
 
+viewEditCycle : CycleTimer.Cycle -> Html Msg
+viewEditCycle cycle =
+    Html.div [ class "control-group" ]
+        [ Html.input [ type_ "text" ] []
+        , Html.input [ type_ "number" ] []
+        , Html.button [ type_ "button", class "fa-plus-circle control-transparent" ] []
+        ]
+
+
 viewAdd : Model -> Html Msg
 viewAdd model =
-    Html.div [] [ Html.text "Add" ]
+    let
+        ( title, cycles ) =
+            CycleTimer.cycleTimer model.newWorkout
+    in
+        Html.form [ class "workout-form" ]
+            (Html.div [ class "workout-title" ]
+                [ Html.label [] [ Html.text "Workout title" ]
+                , Html.input [ type_ "text" ] []
+                ]
+                :: List.map viewEditCycle cycles
+            )
 
 
 subscriptions : Model -> Sub Msg

@@ -1,4 +1,4 @@
-module CycleTimer exposing (Cycle, cycle, Model, initialize, title, start, pause, reset, tick, current, modelToJson, modelJsonDecoder)
+module CycleTimer exposing (Cycle, cycle, Model, initialize, title, start, pause, reset, tick, current, cycleTimer, modelToJson, modelJsonDecoder)
 
 import Time
 import Json.Encode as JsonE
@@ -181,6 +181,11 @@ isLast =
 current : Model -> ( String, Time.Time )
 current (Model { timer, cycles }) =
     ( SelectList.selected cycles |> (\(Cycle cycle) -> cycle.title), timer )
+
+
+cycleTimer : Model -> ( String, List Cycle )
+cycleTimer (Model model) =
+    ( model.title, SelectList.toList model.cycles )
 
 
 modelStateToJson : ModelState -> JsonE.Value

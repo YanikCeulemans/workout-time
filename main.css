@@ -45,7 +45,7 @@ button:focus {
 }
 
 .header-title > *:last-child {
-    margin-right: 0;
+    margin-right: initial;
 }
 
 .content {
@@ -102,4 +102,34 @@ button:focus {
 .control-navigate-back.active {
     width: 23px;
     opacity: 1;
+}
+
+.workout-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.workout-form > * {
+    margin-bottom: 15px;
+}
+
+.workout-form > *:last-child {
+    margin-bottom: initial;
+}
+
+.workout-title {
+    display: flex;
+    flex-direction: column;
+}
+
+.control-group {
+    display: flex;
+}
+
+.control-group > * {
+    margin-right: 15px;
+}
+
+.control-group > *:last-child {
+    margin-right: initial;
 }
