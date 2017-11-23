@@ -3,12 +3,8 @@
     "version": "1.0.0",
     "description": "",
     "main": "main.js",
-    "watch": {
-        "build": "*.elm"
-    },
     "scripts": {
-        "start": "npm run watch",
-        "watch": "npm-watch",
+        "start": "chokidar '**/*.elm' -c 'npm run build' --initial",
         "build": "elm-make Main.elm --output=main.js"
     },
     "repository": {
@@ -22,6 +18,7 @@
     },
     "homepage": "https://github.com/YanikCeulemans/workout-time#readme",
     "devDependencies": {
-        "npm-watch": "^0.3.0"
+        "chokidar-cli": "^1.2.0",
+        "elm": "^0.18.0"
     }
 }

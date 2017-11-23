@@ -122,6 +122,15 @@ button:focus {
     flex-direction: column;
 }
 
+.workout-input {
+    font-size: 100%;
+    background-color: transparent;
+    color: #d0c4c4;
+    border: 1px solid #d0c4c4;
+    border-radius: 3px;
+    padding: 5px 10px;
+}
+
 .control-group {
     display: flex;
 }

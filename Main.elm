@@ -191,6 +191,13 @@ viewRouteContent model =
             viewAdd model
 
 
+workoutInput : List (Html.Attribute Msg) -> Html Msg
+workoutInput attrs =
+    Html.input
+        ((class "workout-input") :: attrs)
+        []
+
+
 workoutItem : CycleTimer.Model -> Html Msg
 workoutItem workout =
     Html.li
@@ -242,8 +249,8 @@ viewWorkout model =
 viewEditCycle : CycleTimer.Cycle -> Html Msg
 viewEditCycle cycle =
     Html.div [ class "control-group" ]
-        [ Html.input [ type_ "text" ] []
-        , Html.input [ type_ "number" ] []
+        [ workoutInput [ type_ "text", class "test" ]
+        , workoutInput [ type_ "number" ]
         , Html.button [ type_ "button", class "fa-plus-circle control-transparent" ] []
         ]
 
